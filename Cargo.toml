@@ -5,6 +5,7 @@ authors = ["Chiu-Hsiang Hsu <wdv4758h@gmail.com>"]
 
 [dependencies]
 pyo3 = { version = "0.2.7", default-features = false }
+glob = "0.2.11"
 
 [lib]
 crate-type = ["cdylib"]
