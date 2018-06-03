@@ -26,7 +26,7 @@ fn init(py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "iglob")]
     pub fn iglob(py: Python, pathname: String) -> PyResult<PyObject> {
-        glob_fn(py, pathname)
+        glob_str(py, pathname)
     }
 
     #[pyfn(m, "fnmatch")]
@@ -34,8 +34,9 @@ fn init(py: Python, m: &PyModule) -> PyResult<()> {
     #[pyfn(m, "glob1")]
     pub fn glob1(py: Python) -> PyResult<PyObject> { Ok(py.None()) }
 
-    #[pyfn(m, "glob")]
-    pub fn glob_fn(py: Python, pathname: String) -> PyResult<PyObject> {
+    #[pyfn(m, "glob_str")]
+    pub fn glob_str(py: Python, pathname: String) -> PyResult<PyObject> {
+        // expected str, bytes or os.PathLike object
         let options = MatchOptions {
             case_sensitive: true,
             require_literal_separator: false,
