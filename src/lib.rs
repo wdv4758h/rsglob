@@ -6,7 +6,7 @@ extern crate glob;
 
 
 use pyo3::prelude::*;
-use glob::glob;
+use glob::{glob_with, MatchOptions};
 use std::result::Result;
 
 
@@ -36,10 +36,23 @@ fn init(py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "glob")]
     pub fn glob_fn(py: Python, pathname: String) -> PyResult<PyObject> {
-        let result: Vec<_> = glob(pathname.as_str())
+        let options = MatchOptions {
+            case_sensitive: true,
+            require_literal_separator: false,
+            // don't show files with '.' prefix, unless it's literally in the pattern
+            require_literal_leading_dot: true,
+        };
+        let result: Vec<_> = glob_with(pathname.as_str(), &options)
             .unwrap()
             .filter_map(Result::ok)
-            .map(|p| p.to_str().unwrap().to_string())
+            .filter_map(|p| {
+                // FIXME: better solution for get rid of "./." and "./.." with ".*" pattern ?
+                let s = p.to_str().unwrap();
+                match s {
+                    "./." | "./.." => None,
+                    string @ _ => Some(string.to_string())
+                }
+            })
             .collect();
         Ok(result.to_object(py))
     }
